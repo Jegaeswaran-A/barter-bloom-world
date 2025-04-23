@@ -11,6 +11,11 @@ import ItemCard from "@/components/ItemCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
+// Define ItemCardProps interface to match the props expected by ItemCard component
+interface ItemCardProps {
+  item: Item;
+}
+
 const Browse = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState<Item[]>([]);
@@ -113,7 +118,7 @@ const Browse = () => {
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Categories</SelectItem>
+                        <SelectItem value="all">All Categories</SelectItem>
                         {categories.map((cat) => (
                           <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                         ))}
@@ -127,7 +132,7 @@ const Browse = () => {
                         <SelectValue placeholder="Select condition" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Conditions</SelectItem>
+                        <SelectItem value="all">All Conditions</SelectItem>
                         {conditions.map((cond) => (
                           <SelectItem key={cond} value={cond}>{cond}</SelectItem>
                         ))}
