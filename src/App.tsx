@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import AddItem from "./pages/AddItem";
 import ItemDetails from "./pages/ItemDetails";
 import Profile from "./pages/Profile";
+import Browse from "./pages/Browse";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
         <Route path="/add-item" element={<AddItem />} />
         <Route path="/items/:id" element={<ItemDetails />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/browse" element={<Browse />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
