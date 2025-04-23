@@ -1,7 +1,12 @@
 
 import { toast } from "@/components/ui/use-toast";
 
+// Configure API URL based on environment
+// In a real production app, you would use environment variables
 const API_URL = "http://localhost:5000/api";
+
+// Use mock mode when the actual API is not available (like in Lovable preview)
+const MOCK_MODE = true; // Set this to false when you have a real backend running
 
 interface ApiResponse<T> {
   success: boolean;
@@ -57,17 +62,102 @@ export interface ItemData {
   location?: string;
 }
 
+// Mock data for preview/demo purposes
+const mockUsers: Record<string, User> = {
+  "user1": {
+    _id: "user1",
+    name: "Demo User",
+    email: "demo@example.com",
+    createdAt: new Date().toISOString(),
+    bio: "This is a demo user for preview purposes",
+    location: "Demo City"
+  }
+};
+
+const mockItems: Record<string, Item> = {
+  "item1": {
+    _id: "item1",
+    title: "Vintage Camera",
+    description: "A beautiful vintage film camera in excellent condition",
+    images: ["/placeholder.svg"],
+    category: "Electronics",
+    condition: "Good",
+    owner: {
+      _id: "user1", 
+      name: "Demo User"
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    lookingFor: "Modern digital camera",
+    location: "Demo City"
+  },
+  "item2": {
+    _id: "item2",
+    title: "Mountain Bike",
+    description: "Mountain bike in great condition, barely used",
+    images: ["/placeholder.svg"],
+    category: "Sports",
+    condition: "Excellent",
+    owner: {
+      _id: "user1",
+      name: "Demo User"
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    lookingFor: "Road bike or electric scooter",
+    location: "Demo City"
+  },
+  "item3": {
+    _id: "item3",
+    title: "Coffee Table Book Collection",
+    description: "Collection of premium coffee table books about architecture",
+    images: ["/placeholder.svg"],
+    category: "Books",
+    condition: "Like New",
+    owner: {
+      _id: "user1",
+      name: "Demo User"
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    lookingFor: "Art books or vinyl records",
+    location: "Demo City"
+  },
+  "item4": {
+    _id: "item4",
+    title: "Leather Jacket",
+    description: "Classic leather jacket, size M, brown",
+    images: ["/placeholder.svg"],
+    category: "Clothing",
+    condition: "Good",
+    owner: {
+      _id: "user1",
+      name: "Demo User"
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    lookingFor: "Winter coat or denim jacket",
+    location: "Demo City"
+  },
+};
+
+let currentUser: User | null = null;
+
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-// Helper to handle API requests
+// Helper to handle API requests with fallback to mock data
 const apiRequest = async <T>(
   endpoint: string,
   method: string = "GET",
   data?: any
 ): Promise<ApiResponse<T>> => {
+  if (MOCK_MODE) {
+    return handleMockRequest<T>(endpoint, method, data);
+  }
+  
   try {
     const headers = {
       "Content-Type": "application/json",
@@ -89,6 +179,12 @@ const apiRequest = async <T>(
 
     return { success: true, data: result.data as T, message: result.message };
   } catch (error: any) {
+    // Check if error is related to connection issues
+    if (error.message.includes("Failed to fetch") || error.message === "Network Error") {
+      console.warn("API connection failed. Switching to mock mode.");
+      return handleMockRequest<T>(endpoint, method, data);
+    }
+    
     toast({
       title: "Error",
       description: error.message,
@@ -96,6 +192,115 @@ const apiRequest = async <T>(
     });
     return { success: false, message: error.message };
   }
+};
+
+// Helper to handle mock requests
+const handleMockRequest = async <T>(
+  endpoint: string,
+  method: string = "GET",
+  data?: any
+): Promise<ApiResponse<T>> => {
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  // Handle different API endpoints with mock data
+  if (endpoint === "/users/register" && method === "POST") {
+    const { name, email } = data as RegisterData;
+    const userId = `user_${Date.now()}`;
+    const newUser: User = {
+      _id: userId,
+      name,
+      email,
+      createdAt: new Date().toISOString(),
+    };
+    mockUsers[userId] = newUser;
+    currentUser = newUser;
+    return {
+      success: true,
+      data: { user: newUser, token: "mock_token_" + userId } as unknown as T,
+      message: "Registration successful"
+    };
+  }
+
+  if (endpoint === "/users/login" && method === "POST") {
+    const { email } = data as LoginData;
+    const userId = "user1"; // Use default user for demo
+    currentUser = mockUsers[userId];
+    if (currentUser) {
+      return {
+        success: true,
+        data: { user: currentUser, token: "mock_token_" + userId } as unknown as T,
+        message: "Login successful"
+      };
+    }
+    return { success: false, message: "Invalid email or password" };
+  }
+
+  if (endpoint === "/users/me" && method === "GET") {
+    if (!currentUser) {
+      currentUser = mockUsers["user1"]; // Use default user for demo
+    }
+    return {
+      success: true,
+      data: currentUser as unknown as T,
+      message: "User data retrieved"
+    };
+  }
+
+  if (endpoint.startsWith("/items") && method === "GET") {
+    if (endpoint === "/items") {
+      const itemsArray = Object.values(mockItems);
+      return {
+        success: true,
+        data: itemsArray as unknown as T,
+        message: "Items retrieved successfully"
+      };
+    }
+
+    // Handle single item get
+    const itemId = endpoint.split("/").pop();
+    if (itemId && mockItems[itemId]) {
+      return {
+        success: true,
+        data: mockItems[itemId] as unknown as T,
+        message: "Item retrieved successfully"
+      };
+    }
+  }
+
+  if (endpoint === "/items" && method === "POST") {
+    const itemData = data as ItemData;
+    const itemId = `item_${Date.now()}`;
+    
+    if (!currentUser) {
+      currentUser = mockUsers["user1"]; // Use default user for demo
+    }
+    
+    const newItem: Item = {
+      _id: itemId,
+      ...itemData,
+      owner: {
+        _id: currentUser._id,
+        name: currentUser.name
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    
+    mockItems[itemId] = newItem;
+    return {
+      success: true,
+      data: newItem as unknown as T,
+      message: "Item created successfully"
+    };
+  }
+
+  // Default response if no specific mock handler exists
+  return {
+    success: true,
+    data: {} as T,
+    message: "Mock request processed successfully"
+  };
 };
 
 // Auth APIs
@@ -138,6 +343,12 @@ export const getUserItems = (userId: string) => {
 
 // Upload image
 export const uploadImage = async (file: File): Promise<string | null> => {
+  if (MOCK_MODE) {
+    // In mock mode, just return a placeholder image URL
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate upload delay
+    return "/placeholder.svg";
+  }
+  
   try {
     const formData = new FormData();
     formData.append("image", file);
