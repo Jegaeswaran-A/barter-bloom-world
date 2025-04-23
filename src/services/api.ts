@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/use-toast";
 
 // Configure API URL based on environment
@@ -77,57 +76,25 @@ const mockUsers: Record<string, User> = {
 const mockItems: Record<string, Item> = {
   "item1": {
     _id: "item1",
-    title: "Vintage Camera",
-    description: "A beautiful vintage film camera in excellent condition",
-    images: ["/placeholder.svg"],
+    title: "MacBook Pro 2023",
+    description: "13-inch MacBook Pro with M2 chip, 512GB SSD, Space Gray. Like new condition with original packaging.",
+    images: ["https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"],
     category: "Electronics",
-    condition: "Good",
+    condition: "Like New",
     owner: {
       _id: "user1", 
       name: "Demo User"
     },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    lookingFor: "Modern digital camera",
-    location: "Demo City"
+    lookingFor: "Gaming Laptop or iPad Pro",
+    location: "San Francisco"
   },
   "item2": {
     _id: "item2",
-    title: "Mountain Bike",
-    description: "Mountain bike in great condition, barely used",
-    images: ["/placeholder.svg"],
-    category: "Sports",
-    condition: "Excellent",
-    owner: {
-      _id: "user1",
-      name: "Demo User"
-    },
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    lookingFor: "Road bike or electric scooter",
-    location: "Demo City"
-  },
-  "item3": {
-    _id: "item3",
-    title: "Coffee Table Book Collection",
-    description: "Collection of premium coffee table books about architecture",
-    images: ["/placeholder.svg"],
-    category: "Books",
-    condition: "Like New",
-    owner: {
-      _id: "user1",
-      name: "Demo User"
-    },
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    lookingFor: "Art books or vinyl records",
-    location: "Demo City"
-  },
-  "item4": {
-    _id: "item4",
-    title: "Leather Jacket",
-    description: "Classic leather jacket, size M, brown",
-    images: ["/placeholder.svg"],
+    title: "Nike Air Jordan 1 High",
+    description: "Size US 10, Chicago colorway. Worn only twice, comes with original box and extra laces.",
+    images: ["https://images.unsplash.com/photo-1649972904349-6e44c42644a7"],
     category: "Clothing",
     condition: "Good",
     owner: {
@@ -136,8 +103,56 @@ const mockItems: Record<string, Item> = {
     },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    lookingFor: "Winter coat or denim jacket",
-    location: "Demo City"
+    lookingFor: "Adidas Yeezys or other premium sneakers",
+    location: "Los Angeles"
+  },
+  "item3": {
+    title: "Sony A7 III Camera",
+    _id: "item3",
+    description: "Full-frame mirrorless camera with 28-70mm kit lens. Includes 2 batteries, charger, and camera bag.",
+    images: ["https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"],
+    category: "Electronics",
+    condition: "Good",
+    owner: {
+      _id: "user1",
+      name: "Demo User"
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    lookingFor: "Canon R6 or Fujifilm X-T4",
+    location: "New York"
+  },
+  "item4": {
+    _id: "item4",
+    title: "Vintage Vinyl Collection",
+    description: "Collection of 20 classic rock albums from the 70s and 80s. All in great playing condition.",
+    images: ["https://images.unsplash.com/photo-1518770660439-4636190af475"],
+    category: "Books & Media",
+    condition: "Good",
+    owner: {
+      _id: "user1",
+      name: "Demo User"
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    lookingFor: "Modern vinyl records or high-end turntable",
+    location: "Chicago"
+  },
+  "item5": {
+    _id: "item5",
+    title: "Mechanical Keyboard",
+    description: "Custom mechanical keyboard with Cherry MX Blue switches, PBT keycaps, and RGB backlighting.",
+    images: ["https://images.unsplash.com/photo-1461749280684-dccba630e2f6"],
+    category: "Electronics",
+    condition: "New",
+    owner: {
+      _id: "user1",
+      name: "Demo User"
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    lookingFor: "Gaming mouse or audio interface",
+    location: "Seattle"
   },
 };
 

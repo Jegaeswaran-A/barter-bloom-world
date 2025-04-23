@@ -162,7 +162,18 @@ const Browse = () => {
           ) : items.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {items.map((item) => (
-                <ItemCard key={item._id} item={item} />
+                <ItemCard 
+                  key={item._id}
+                  id={item._id}
+                  title={item.title}
+                  description={item.description}
+                  image={item.images[0]}
+                  category={item.category}
+                  condition={item.condition}
+                  ownerId={item.owner._id}
+                  ownerName={item.owner.name}
+                  createdAt={item.createdAt}
+                />
               ))}
             </div>
           ) : (
