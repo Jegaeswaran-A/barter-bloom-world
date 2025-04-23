@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -30,7 +29,7 @@ const ItemDetails = () => {
           
           // Check if current user is the owner
           const userId = localStorage.getItem("userId");
-          if (userId && response.data.owner._id === userId) {
+          if (userId && response.data.owner && response.data.owner._id === userId) {
             setIsOwner(true);
           }
         } else {
@@ -43,6 +42,12 @@ const ItemDetails = () => {
         }
       } catch (error) {
         console.error("Error fetching item details:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load item details",
+          variant: "destructive",
+        });
+        navigate("/browse");
       } finally {
         setIsLoading(false);
       }
@@ -52,14 +57,14 @@ const ItemDetails = () => {
   }, [id, navigate]);
 
   const handlePrevImage = () => {
-    if (!item) return;
+    if (!item || !item.images || item.images.length === 0) return;
     setCurrentImageIndex((prevIndex) => 
       prevIndex === 0 ? item.images.length - 1 : prevIndex - 1
     );
   };
 
   const handleNextImage = () => {
-    if (!item) return;
+    if (!item || !item.images || item.images.length === 0) return;
     setCurrentImageIndex((prevIndex) => 
       prevIndex === item.images.length - 1 ? 0 : prevIndex + 1
     );
@@ -114,6 +119,9 @@ const ItemDetails = () => {
     );
   }
 
+  const images = item?.images || [];
+  const currentImage = images.length > 0 ? images[currentImageIndex] : '/placeholder.svg';
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -125,12 +133,12 @@ const ItemDetails = () => {
               <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 <div className="relative h-96">
                   <img
-                    src={item.images[currentImageIndex]}
-                    alt={item.title}
+                    src={currentImage}
+                    alt={item?.title || 'Item image'}
                     className="w-full h-full object-contain"
                   />
                   
-                  {item.images.length > 1 && (
+                  {images.length > 1 && (
                     <>
                       <button
                         onClick={handlePrevImage}
@@ -176,9 +184,9 @@ const ItemDetails = () => {
                   )}
                 </div>
 
-                {item.images.length > 1 && (
+                {images.length > 1 && (
                   <div className="flex overflow-x-auto p-4 space-x-2">
-                    {item.images.map((image, index) => (
+                    {images.map((image, index) => (
                       <button
                         key={index}
                         onClick={() => setCurrentImageIndex(index)}
@@ -188,7 +196,7 @@ const ItemDetails = () => {
                       >
                         <img
                           src={image}
-                          alt={`${item.title} thumbnail ${index + 1}`}
+                          alt={`${item?.title || 'Item'} thumbnail ${index + 1}`}
                           className="w-full h-full object-cover"
                         />
                       </button>
@@ -199,10 +207,10 @@ const ItemDetails = () => {
 
               <div className="bg-white rounded-lg shadow-sm mt-8 p-6">
                 <h2 className="text-xl font-semibold mb-4">Description</h2>
-                <p className="text-gray-700 whitespace-pre-line">{item.description}</p>
+                <p className="text-gray-700 whitespace-pre-line">{item?.description || 'No description available'}</p>
               </div>
 
-              {item.lookingFor && (
+              {item?.lookingFor && (
                 <div className="bg-white rounded-lg shadow-sm mt-8 p-6">
                   <h2 className="text-xl font-semibold mb-4">Looking For</h2>
                   <p className="text-gray-700">{item.lookingFor}</p>
@@ -214,27 +222,27 @@ const ItemDetails = () => {
             <div className="lg:col-span-1">
               <Card>
                 <CardContent className="p-6">
-                  <h1 className="text-2xl font-bold mb-2">{item.title}</h1>
+                  <h1 className="text-2xl font-bold mb-2">{item?.title || 'Item'}</h1>
                   <div className="flex items-center gap-2 mb-6">
-                    <Badge variant="secondary">{item.category}</Badge>
-                    <Badge variant="outline">{item.condition}</Badge>
+                    <Badge variant="secondary">{item?.category || 'Uncategorized'}</Badge>
+                    <Badge variant="outline">{item?.condition || 'Unknown'}</Badge>
                   </div>
 
                   <div className="border-t border-b py-4 my-4">
                     <div className="flex items-center space-x-3">
                       <div className="h-10 w-10 bg-swapspace-primary bg-opacity-10 rounded-full flex items-center justify-center text-swapspace-primary">
-                        {item.owner.name.charAt(0)}
+                        {item?.owner?.name?.charAt(0) || '?'}
                       </div>
                       <div>
-                        <p className="font-medium">{item.owner.name}</p>
+                        <p className="font-medium">{item?.owner?.name || 'Unknown Owner'}</p>
                         <p className="text-sm text-gray-500">
-                          Listed on {formatDate(item.createdAt)}
+                          {item?.createdAt ? `Listed on ${formatDate(item.createdAt)}` : 'Recently listed'}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  {item.location && (
+                  {item?.location && (
                     <div className="mb-6">
                       <p className="text-sm text-gray-500 mb-1">Location</p>
                       <p className="font-medium">{item.location}</p>
@@ -247,7 +255,7 @@ const ItemDetails = () => {
                         className="w-full"
                         asChild
                       >
-                        <Link to={`/items/${item._id}/edit`}>Edit Item</Link>
+                        <Link to={`/items/${item?._id}/edit`}>Edit Item</Link>
                       </Button>
                       <Button
                         variant="destructive"
